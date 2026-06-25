@@ -28,6 +28,7 @@ type FormData = z.infer<typeof schema>;
 export default function RegisterPage() {
   const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const setTokens = useAuthStore((s) => s.setTokens);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -53,11 +54,10 @@ export default function RegisterPage() {
         password: data.password,
       });
       const { access_token, refresh_token } = tokenRes.data;
-      const userRes = await api.get<User>("/auth/me", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      setTokens(access_token, refresh_token);
+      const userRes = await api.get<User>("/auth/me");
       setAuth(userRes.data, access_token, refresh_token);
-      router.push("/chat");
+      router.push("/dashboard");
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { detail?: string } } }).response?.data?.detail ??
@@ -133,7 +133,7 @@ export default function RegisterPage() {
 
             <p className="text-center text-sm mt-5 text-gray-500">
               Already have an account?{" "}
-              <Link href="/login" className="text-cixio-blue font-medium hover:text-cixio-navy transition-colors">
+              <Link href="/auth/login" className="text-cixio-blue font-medium hover:text-cixio-navy transition-colors">
                 Sign in
               </Link>
             </p>

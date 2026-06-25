@@ -1,10 +1,11 @@
 import axios from "axios";
 import { useAuthStore } from "@/store/authStore";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
+const baseURL = API_URL ? `${API_URL}/api/v1` : "/api/v1";
 
 const api = axios.create({
-  baseURL: `${API_URL}/api/v1`,
+  baseURL,
   headers: { "Content-Type": "application/json" },
   // Axios follows redirects but re-sends GET for 307 POST redirects by default.
   // maxRedirects: 0 so we handle trailing-slash 307s at the call site by always
@@ -13,8 +14,8 @@ const api = axios.create({
 
 // Request interceptor — attach access token
 api.interceptors.request.use((config) => {
-  // Get token from Zustand store, not localStorage
-  const token = useAuthStore.getState().accessToken;
+  const token = useAuthStore.getState().accessToken ||
+    (typeof window !== "undefined" ? localStorage.getItem("access_token") : null);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -44,12 +45,12 @@ api.interceptors.response.use(
         } catch {
           // Refresh failed — clear tokens and redirect to login
           useAuthStore.getState().logout();
-          if (typeof window !== "undefined") window.location.href = "/login";
+          if (typeof window !== "undefined") window.location.href = "/auth/login";
         }
       } else {
         // No refresh token at all — send to login
         useAuthStore.getState().logout();
-        if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) window.location.href = "/login";
+        if (typeof window !== "undefined" && !window.location.pathname.startsWith("/auth/login")) window.location.href = "/auth/login";
       }
     }
     return Promise.reject(error);

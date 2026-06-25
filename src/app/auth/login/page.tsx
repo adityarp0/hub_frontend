@@ -20,6 +20,7 @@ type FormData = z.infer<typeof schema>;
 export default function LoginPage() {
   const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const setTokens = useAuthStore((s) => s.setTokens);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -34,14 +35,13 @@ export default function LoginPage() {
       const tokenRes = await api.post<TokenResponse>("/auth/login", data);
       const { access_token, refresh_token } = tokenRes.data;
 
-      // Temporarily set tokens in the store so the next request is authenticated
-      useAuthStore.getState().setTokens(access_token, refresh_token);
+      setTokens(access_token, refresh_token);
 
       // Fetch current user profile
       const userRes = await api.get<User>("/auth/me");
 
       setAuth(userRes.data, access_token, refresh_token);
-      router.push("/chat");
+      router.push("/dashboard");
     } catch (err: unknown) {
       const message =
         (err as { response?: { data?: { detail?: string } } }).response?.data?.detail ??
@@ -120,7 +120,7 @@ export default function LoginPage() {
 
             <p className="text-center text-sm mt-5 text-gray-500">
               Don&apos;t have an account?{" "}
-              <Link href="/register" className="text-cixio-blue font-medium hover:text-cixio-navy transition-colors">
+              <Link href="/auth/register" className="text-cixio-blue font-medium hover:text-cixio-navy transition-colors">
                 Create one
               </Link>
             </p>
