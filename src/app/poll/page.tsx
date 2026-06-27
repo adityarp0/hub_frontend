@@ -443,7 +443,7 @@ export default function PollPage() {
                 Q13
               </span>
               <div>
-                <p className="text-sm font-semibold text-gray-900">Anything specific you'd like your mentor to know?</p>
+                <p className="text-sm font-semibold text-gray-900">Anything specific you&apos;d like your mentor to know?</p>
                 <p className="text-xs text-cixio-muted mt-0.5">Blockers, feedback, suggestions — anything goes. This is anonymous.</p>
               </div>
             </div>

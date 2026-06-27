@@ -2,17 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
-  const file = formData.get("file") as any;
+  const entry = formData.get("file");
 
-  if (!file) {
-    return NextResponse.json({ error: "No file provided" }, { status: 400 });
+  if (!(entry instanceof File)) {
+    return NextResponse.json(
+      { error: "No file provided" },
+      { status: 400 }
+    );
   }
+
+  const file = entry;
 
   // -- MOCK MODE --
   // For now, just pretend we saved it and return a fake URL
   // (In dev, you could even save it to /public/uploads temporarily)
-  const name = file.name ?? `avatar-${Date.now()}`;
-  return NextResponse.json({ url: `/uploads/${Date.now()}-${name}` });
+  const name = file.name || `avatar-${Date.now()}`;
+
+  return NextResponse.json({
+    url: `/uploads/${Date.now()}-${name}`,
+  });
 
   // -- REAL MODE (once FastAPI + Cloudinary/S3 is ready) --
   /*
@@ -26,11 +34,12 @@ export async function POST(req: NextRequest) {
   });
 
   const data = await res.json();
-  return NextResponse.json({ url: data.avatar_url }); // FastAPI returns the Cloudinary URL
+  return NextResponse.json({ url: data.avatar_url });
   */
 }
 
-export async function DELETE(req: NextRequest) {
-  // In mock mode we simply acknowledge the delete. In real mode, call backend.
+export async function DELETE(_req: NextRequest) {
+  // In mock mode we simply acknowledge the delete.
+  // In real mode, call the backend.
   return NextResponse.json({ ok: true });
 }

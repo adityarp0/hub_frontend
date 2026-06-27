@@ -150,10 +150,10 @@ export default function DocumentBrowser({ initialDocuments, initialError }: Prop
   }, []);
   const onDragLeave = useCallback(() => setDragging(false), []);
   const onDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    handleFiles(e.dataTransfer.files);
-  }, []);
+  e.preventDefault();
+  setDragging(false);
+  handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
 
   // ── Delete mutation
   const deleteMutation = useMutation({
@@ -342,7 +342,7 @@ export default function DocumentBrowser({ initialDocuments, initialError }: Prop
 
           {(isError || serverError) && (
             <div className="text-center py-20 text-red-400 text-sm">
-              Couldn't load documents. {serverError ? serverError : 'Check your connection and try again.'}
+              Couldn&apos;t load documents. {serverError ? serverError : 'Check your connection and try again.'}
             </div>
           )}
 
@@ -562,7 +562,7 @@ export default function DocumentBrowser({ initialDocuments, initialError }: Prop
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 w-80 mx-4">
             <h2 className="text-base font-semibold text-gray-900 mb-1">Delete document?</h2>
             <p className="text-sm text-gray-500 mb-5">
-              This can't be undone. The file will be permanently removed.
+              This can&apos;t be undone. The file will be permanently removed.
             </p>
             <div className="flex gap-3">
               <button
